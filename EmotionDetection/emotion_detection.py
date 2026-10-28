@@ -7,12 +7,23 @@ def emotion_detector(text_to_analyze):
     myobj = {"raw_document": {"text": text_to_analyze}}
 
     response = requests.post(url, json=myobj, headers=header)
+
+    # Handle blank entry — API returns 400 for empty input
+    if response.status_code == 400:
+        return {
+            'anger': None,
+            'disgust': None,
+            'fear': None,
+            'joy': None,
+            'sadness': None,
+            'dominant_emotion': None
+        }
+
+    # Parse the response for valid input
     response_data = json.loads(response.text)
 
-    # Navigate directly to the emotion dictionary
     emotions = response_data['emotionPredictions'][0]['emotion']
 
-    # Values are plain floats — access directly
     anger_score   = emotions['anger']
     disgust_score = emotions['disgust']
     fear_score    = emotions['fear']
